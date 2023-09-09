@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { validationResult}  =  require('express-validator');
 const User = require('../models/User');
 const HttpError = require('../models/http-error');
+const { check }  =  require('express-validator');
 
 const postAuthUser = async(req,res,next) => {
     // Array of validation chains

@@ -1,8 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/db');
-
 const app = express();
-
+const bodyParser = require('body-parser');
 const users = require('./routes/api/users-route');
 const auth = require('./routes/api/auth-route');
 const posts = require('./routes/api/posts-route');
@@ -12,30 +11,28 @@ const HttpError = require('./models/http-error');
 //Connect Database
 connectDB();
 
+app.use(bodyParser.json());
+
 //Init Middleware
-app.use(express.json({ extended: false}));
+app.use(express.json({ extended: false }));
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-
-     // Check if error is an instance of HttpError
-     if (err instanceof HttpError) {
-        return res.status(err.code).json(err.toJSON());
-    }
-
-    // Handle other generic errors
-    res.status(500).json({
-        error: {
-            message: err.message || 'Internal Server Error'
-        }
-    });
-
-});
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers',
+        'Origin',
+        'X-Requested-With',
+        'Content-Type',
+        'Authorization',
+        'Accept'
+    );
+    res.setHeader('Access-Controll-Allow-Methods','GET,POST,PATCH,DELETE');
+    next();
+})
 
 // Serve static uploads
 app.use('/uploads', express.static('uploads'));
 
-app.get('/', (req,res)=> res.send('API Running'));
+app.get('/', (req, res) => res.send('API Running'));
 
 //Define Routes
 app.use('/api/users', users);
@@ -43,11 +40,19 @@ app.use('/api/auth', auth);
 app.use('/api/posts', posts);
 app.use('/api/images', images);
 
-app.use((req,res,next)=>{
-    throw new HttpError('Could not find this route.',404);
-})
 
-const PORT = process.env.PORT || 5000;
+app.use((err, req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    console.error(err.stack);
+    res.status(err.status || 500);
+    res.json({
+        error: {
+            message: err.message  || 'Internal Server Error'
+        }
+    });
+});
 
-app.listen(PORT, ()=> console.log(`Server started on port ${PORT}`));
+const PORT = process.env.PORT || 5200;
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 

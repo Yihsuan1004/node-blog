@@ -14,7 +14,7 @@ router.get('/', auth, authControllers.getAuthUser);
 //@desc Authenticate user & get token.
 //@access Public
 
-router.post('/',auth , authControllers.postAuthUser); 
+router.post('/', authControllers.postAuthUser); 
 
 
 module.exports = router;
