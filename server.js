@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const connectDB = require('./config/db');
 const app = express();
 const bodyParser = require('body-parser');
@@ -11,23 +12,12 @@ const HttpError = require('./models/http-error');
 //Connect Database
 connectDB();
 
-app.use(bodyParser.json());
+app.use(cors());
 
 //Init Middleware
 app.use(express.json({ extended: false }));
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers',
-        'Origin',
-        'X-Requested-With',
-        'Content-Type',
-        'Authorization',
-        'Accept'
-    );
-    res.setHeader('Access-Controll-Allow-Methods','GET,POST,PATCH,DELETE');
-    next();
-})
+app.use(bodyParser.json());
 
 // Serve static uploads
 app.use('/uploads', express.static('uploads'));
@@ -42,6 +32,9 @@ app.use('/api/images', images);
 
 
 app.use((err, req, res, next) => {
+    if (res.headersSent) {
+        return next(err);
+    }
     res.setHeader('Content-Type', 'application/json');
     console.error(err.stack);
     res.status(err.status || 500);
