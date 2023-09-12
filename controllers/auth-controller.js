@@ -6,7 +6,7 @@ const User = require('../models/User');
 const HttpError = require('../models/http-error');
 const { check }  =  require('express-validator');
 
-const postAuthUser = async(req,res,next) => {
+const login = async(req,res,next) => {
     // Array of validation chains
     const validationChains =  [
         check('email','Please include a valid email').isEmail(),
@@ -41,7 +41,8 @@ const postAuthUser = async(req,res,next) => {
         //Return jsonwebtoken
         const payload = {
             user:{
-                id: user.id
+                id: user.id,
+                role: user.role
             }
         }
 
@@ -51,7 +52,10 @@ const postAuthUser = async(req,res,next) => {
             {expiresIn: 360000},
             (err,token)=>{
                 if(err) throw err;
-                res.json({ token });
+                res.json({ 
+                    token, 
+                    role:user.role 
+                });
             }
         )
 
@@ -78,5 +82,5 @@ const getAuthUser = async(req,res) =>{
 }
 
 
-exports.getAuthUser= getAuthUser;
-exports.postAuthUser= postAuthUser;
+exports.getAuthUser = getAuthUser;
+exports.login = login;
