@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-    name:{
+    fullName:{
         type: String,
         required: true
     },
@@ -14,14 +14,14 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    data: {
+    date: {
         type: Date,
         default: Date.now
     },
     role:{
         type: String,
-        enum: ['admin','user','guest'],
-        default: 'admin'
+        enum: ['admin','user'],
+        default: 'user'
     }
 });
 

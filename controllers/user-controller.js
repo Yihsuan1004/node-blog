@@ -10,7 +10,7 @@ const registerUser = async(req, res, next) => {
 
     // Array of validation chains
     const validationChains = [
-        check('name', 'Name is required').not().isEmpty(),
+        check('fullName', 'Fullname is required').not().isEmpty(),
         check('email', 'Please include a valid email').isEmail(),
         check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
     ];
@@ -25,7 +25,7 @@ const registerUser = async(req, res, next) => {
             throw new HttpError('Validation failed', 400).toJSON();
         }
 
-        const { name, email, password } = req.body;
+        const { fullName, email, password } = req.body;
 
         // Verify if user exists
         let user = await User.findOne({ email });
@@ -35,7 +35,7 @@ const registerUser = async(req, res, next) => {
         }
 
         user = new User({
-            name,
+            fullName,
             email,
             password
         });
@@ -56,7 +56,7 @@ const registerUser = async(req, res, next) => {
         jwt.sign(
             payload,
             config.get('jwtSecret'),
-            { expiresIn: 360000 },
+            { expiresIn: '12h' },
             (err, token) => {
                 if (err) throw new HttpError('Token generation failed', 500).toJSON();
                 res.json({ token });
