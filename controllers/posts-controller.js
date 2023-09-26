@@ -2,19 +2,20 @@ const HttpError = require('../models/http-error');
 const Post = require('../models/Post');
 
 const createPost =  async (req,res,next) =>{
+
     try {
         const { title, tags, content } = req.body;
 
         if (!title || title.trim() === "") {
-            next(new HttpError('Title is required', 400));
+            return next(new HttpError('Title is required', 400));
         }
         
         if (!tags || !Array.isArray(tags) || tags.length === 0) {
-            next(new HttpError('Tags should be an array and cannot be empty', 400));
+            return next(new HttpError('Tags should be an array and cannot be empty', 400));
         }
         
         if (!content || content.trim() === "") {
-            next(new HttpError('Content is required', 400));
+            return next(new HttpError('Content is required', 400));
         }
 
         const post = new Post({
@@ -38,7 +39,7 @@ const getPost =  async (req,res,next) =>{
     try {
         const post = await Post.findById(req.params.postId);
   
-        if (!post) next(new HttpError('Post not found', 404));
+        if (!post) return next(new HttpError('Post not found', 404));
   
         res.json(post);
   
@@ -66,7 +67,7 @@ const updatePost =  async (req,res,next) =>{
     try {
         let post = await Post.findById(req.params.postId);
         
-        if (!post) next(new HttpError('Post not found', 404));
+        if (!post) return  next(new HttpError('Post not found', 404));
   
         const { title, content } = req.body;
   
@@ -86,10 +87,9 @@ const updatePost =  async (req,res,next) =>{
 
 const deletePost =  async (req,res,next) =>{
     try {
-        console.log('postId',req.params.postId);
         const post = await Post.findById(req.params.postId);
   
-        if (!post) next(new HttpError('Post not found', 404));
+        if (!post) return next(new HttpError('Post not found', 404));
   
         await post.deleteOne();
   

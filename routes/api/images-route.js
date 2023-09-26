@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-
+const auth = require('../../middleware/auth');
 const router = express.Router();
 
 // Multer setup
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Image upload route
-router.post('/upload', upload.single('image'), (req, res) => {
+router.post('/upload', auth, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded');
   }

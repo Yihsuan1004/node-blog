@@ -1,10 +1,9 @@
 const config = require('config');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { validationResult}  =  require('express-validator');
+const { check , validationResult}  =  require('express-validator');
 const User = require('../models/User');
 const HttpError = require('../models/http-error');
-const { check }  =  require('express-validator');
 
 const login = async(req,res,next) => {
     // Array of validation chains
@@ -18,7 +17,7 @@ const login = async(req,res,next) => {
 
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        throw new HttpError('Validation failed', 400).toJSON();
+        return next(new HttpError('Validation failed', 400));
     }
 
     const { email , password } = req.body;
@@ -28,14 +27,14 @@ const login = async(req,res,next) => {
         let user = await User.findOne({email});
 
         if(!user){
-            throw new HttpError('Invalid Credentials.', 400).toJSON();
+            return next(new HttpError('Invalid Credentials.', 400));
         }
 
 
         const isMatch = await bcrypt.compare(password,user.password);
 
         if(!isMatch){
-            throw new HttpError('Invalid Credentials.', 400).toJSON();
+            return next(new HttpError('Invalid Credentials.', 400));
         }
      
         //Return jsonwebtoken
@@ -53,8 +52,8 @@ const login = async(req,res,next) => {
             (err,token)=>{
                 if(err) throw err;
                 res.json({ 
-                    token, 
-                    role:user.role 
+                    token,
+                    role:user.role  
                 });
             }
         )
@@ -64,7 +63,7 @@ const login = async(req,res,next) => {
             next(err);
         } else {
             console.error(err.message);
-            next(new HttpError('Server error', 500).toJSON());
+            next(new HttpError('Server error', 500));
         }
     }
     
@@ -76,8 +75,8 @@ const getAuthUser = async(req,res) =>{
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
     } catch(err){
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error(err.message);
+        next(new HttpError('Server error', 500));
     }
 }
 
@@ -97,7 +96,11 @@ const registerUser = async(req, res, next) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            throw new HttpError('Validation failed', 400).toJSON();
+            return res.status(400).json({
+                status: 'error',
+                message: 'Validation failed',
+                errors: errors.array()  
+            })
         }
 
         const { fullName, email, password } = req.body;
@@ -106,7 +109,7 @@ const registerUser = async(req, res, next) => {
         let user = await User.findOne({ email });
 
         if (user) {
-            throw new HttpError('User already exists.', 400).toJSON();
+            return next(new HttpError('User already exists.', 400));
         }
 
         user = new User({
@@ -121,22 +124,8 @@ const registerUser = async(req, res, next) => {
 
         await user.save();
 
-        // Return jsonwebtoken
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
-
-        jwt.sign(
-            payload,
-            config.get('jwtSecret'),
-            { expiresIn: '12h' },
-            (err, token) => {
-                if (err) throw new HttpError('Token generation failed', 500).toJSON();
-                res.json({ token });
-            }
-        );
+        res.json({ message: 'Registration Success.' });
+       
 
     } catch (err) {
         if (err instanceof HttpError) {

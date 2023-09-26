@@ -7,7 +7,6 @@ const users = require('./routes/api/users-route');
 const auth = require('./routes/api/auth-route');
 const posts = require('./routes/api/posts-route');
 const images = require('./routes/api/images-route');
-const HttpError = require('./models/http-error');
 
 //Connect Database
 connectDB();
@@ -45,7 +44,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-const PORT = process.env.PORT || 5200;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
