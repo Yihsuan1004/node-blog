@@ -1,7 +1,7 @@
 const HttpError = require('../models/http-error');
 const Post = require('../models/Post');
 
-const createPost =  async (req,res,next) =>{
+exports.createPost =  async (req,res,next) =>{
 
     try {
         const { title, tags, content } = req.body;
@@ -35,7 +35,7 @@ const createPost =  async (req,res,next) =>{
 } 
 
 
-const getPost =  async (req,res,next) =>{
+exports.getPost =  async (req,res,next) =>{
     try {
         const post = await Post.findById(req.params.postId);
   
@@ -49,7 +49,7 @@ const getPost =  async (req,res,next) =>{
 } 
 
 
-const getAllPost =  async (req,res,next) =>{
+exports.getAllPost =  async (req,res,next) =>{
     try {
         const posts = await Post.find();
   
@@ -63,7 +63,7 @@ const getAllPost =  async (req,res,next) =>{
 } 
 
 
-const updatePost =  async (req,res,next) =>{
+exports.updatePost =  async (req,res,next) =>{
     try {
         let post = await Post.findById(req.params.postId);
         
@@ -85,7 +85,7 @@ const updatePost =  async (req,res,next) =>{
 
 
 
-const deletePost =  async (req,res,next) =>{
+exports.deletePost =  async (req,res,next) =>{
     try {
         const post = await Post.findById(req.params.postId);
   
@@ -100,9 +100,3 @@ const deletePost =  async (req,res,next) =>{
     }
 } 
 
-
-exports.createPost = createPost;
-exports.getPost = getPost;
-exports.getAllPost = getAllPost;
-exports.updatePost = updatePost;
-exports.deletePost = deletePost;

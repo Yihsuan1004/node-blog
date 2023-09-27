@@ -5,7 +5,7 @@ const { check , validationResult}  =  require('express-validator');
 const User = require('../models/User');
 const HttpError = require('../models/http-error');
 
-const login = async(req,res,next) => {
+exports.login = async(req,res,next) => {
     // Array of validation chains
     const validationChains =  [
         check('email','Please include a valid email').isEmail(),
@@ -53,6 +53,7 @@ const login = async(req,res,next) => {
                 if(err) throw err;
                 res.json({ 
                     token,
+                    id: user.id,
                     role:user.role  
                 });
             }
@@ -70,7 +71,7 @@ const login = async(req,res,next) => {
 }
 
 
-const getAuthUser = async(req,res) =>{
+exports.getAuthUser = async(req,res) =>{
     try{
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
@@ -80,7 +81,7 @@ const getAuthUser = async(req,res) =>{
     }
 }
 
-const registerUser = async(req, res, next) => {
+exports.registerUser = async(req, res, next) => {
 
     // Array of validation chains
     const validationChains = [
@@ -136,9 +137,3 @@ const registerUser = async(req, res, next) => {
         }
     }
 };
-
-
-
-exports.getAuthUser = getAuthUser;
-exports.login = login;
-exports.registerUser = registerUser;
