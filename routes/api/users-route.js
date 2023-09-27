@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const userControllers = require('../../controllers/user-controller');
+const userControllers = require('../../controllers/users-controller');
 
-//@router POST api/users
-//@desc Register user
+//@router GET api/users/:userId/profile
+//@desc GET user profie
 //@access Public
+router.get('/:userId/profile', userControllers.getUserProfile);
 
-router.post('/',userControllers.registerUser); 
+//@router PUT api/users/:userId/profile
+//@desc PUT user profie
+//@access Public
+router.put('/:userId/profile', userControllers.updateUserProfile);
 
 module.exports = router;
