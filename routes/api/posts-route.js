@@ -13,6 +13,12 @@ router.post("/", auth, postControllers.createPost);
 //@access Public
 router.get("/", auth, postControllers.getAllPost);
 
+//@router GET api/posts/byTag
+//@desc Get all posts by tag.
+//@access Public
+router.get("/byTag", auth, postControllers.getPostsByTag);
+
+
 //@router  GET api/posts/:postId
 //@desc Get single post.
 //@access Public
@@ -27,5 +33,8 @@ router.put("/:postId", auth, postControllers.updatePost);
 //@desc Delete Post.
 //@access Public
 router.delete("/:postId", auth, postControllers.deletePost);
+
+
+
 
 module.exports = router;

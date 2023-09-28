@@ -12,6 +12,14 @@ const PostSchema = new mongoose.Schema({
   content: { 
     type: String, 
     required: true 
+  },
+  createdDate: {
+    type: Date,
+    default: Date.now
+  },
+  authorId:{
+    type: String, 
+    required: true 
   }
 });
 
